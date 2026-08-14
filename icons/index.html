@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SRI KRISHNA BUILDERS - Billing</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f4f6;font-family:Arial,sans-serif;color:#111827}
+.app{max-width:900px;margin:auto;padding:14px}.card{background:white;border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px #00000012}
+h1{margin:0;font-size:23px}.sub{color:#4b5563;margin-top:4px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+label{font-size:13px;font-weight:bold;display:block;margin-bottom:4px}input,select,button{width:100%;padding:11px;border:1px solid #d1d5db;border-radius:9px;font-size:15px}
+button{cursor:pointer;background:#111827;color:white;border:0;font-weight:bold}.secondary{background:#e5e7eb;color:#111827}.danger{background:#dc2626}.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+table{width:100%;border-collapse:collapse;margin-top:8px}th,td{padding:8px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:13px}th{background:#f9fafb}
+.num{text-align:right}.total{font-size:20px;font-weight:bold}.row-actions{display:flex;gap:5px}.row-actions button{padding:7px}
+.bill{max-width:760px;margin:auto}.billhead{text-align:center;border-bottom:2px solid #111;padding-bottom:10px}.billhead h2{margin:0}.billhead p{margin:3px}
+@media(max-width:650px){.grid,.actions{grid-template-columns:1fr 1fr}.actions button:first-child{grid-column:span 2}table{font-size:12px}th,td{padding:6px}}
+@media print{body{background:white}.no-print{display:none!important}.card{box-shadow:none;padding:0}.app{max-width:none;padding:0}.bill{max-width:none}}
+
+/* Modern mobile-first theme */
+:root{--primary:#2563eb;--primary2:#1d4ed8;--ink:#0f172a;--muted:#64748b;--bg:#f1f5f9;--card:#fff;--line:#e2e8f0;--green:#16a34a;--red:#dc2626}
+body{background:linear-gradient(180deg,#eef4ff 0,#f8fafc 35%,#f1f5f9 100%);color:var(--ink)}
+.app{max-width:980px;padding:12px 12px 90px}
+.card{border:1px solid rgba(226,232,240,.9);border-radius:18px;box-shadow:0 8px 25px rgba(15,23,42,.06);padding:16px;margin-bottom:12px}
+.app>.card:first-child{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:white;border:0;padding:20px;position:relative;overflow:hidden}
+.app>.card:first-child:after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.08);right:-35px;top:-45px}
+.app>.card:first-child .sub{color:#bfdbfe}
+h1{font-size:24px;letter-spacing:-.4px}h2,h3{letter-spacing:-.25px}
+input,select{background:#fff;border:1px solid var(--line);min-height:44px}
+input:focus,select:focus{outline:3px solid rgba(37,99,235,.12);border-color:var(--primary)}
+button{min-height:44px;background:linear-gradient(135deg,var(--primary),var(--primary2));box-shadow:0 5px 12px rgba(37,99,235,.18);transition:.15s}
+button:active{transform:translateY(1px);box-shadow:none}
+.secondary{background:#eef2ff;color:#1e40af;box-shadow:none;border:1px solid #dbeafe}
+.danger{background:#fee2e2;color:#b91c1c;box-shadow:none}
+.actions{grid-template-columns:repeat(2,1fr);gap:9px}
+.actions button:first-child{grid-column:span 2}
+.bill{background:#fff}
+.billhead{padding:8px 0 12px}
+.total{color:#0f172a}
+#items{min-width:700px}
+.bill{overflow-x:auto}
+.grid .card{background:#f8fafc}
+@media(max-width:650px){
+ .app{padding:10px 10px 90px}
+ .grid{grid-template-columns:1fr}
+ .actions{grid-template-columns:1fr 1fr}
+ .actions button:first-child{grid-column:span 2}
+ .bill{padding:12px;border-radius:16px}
+ .billhead h2{font-size:20px}
+ table{min-width:650px}
+}
+@media(min-width:651px){.actions{grid-template-columns:repeat(4,1fr)}.actions button:first-child{grid-column:auto}}
+
+/* Screenshot-inspired SRI KRISHNA BUILDERS app shell */
+:root{
+  --navy:#061b45;--navy2:#082a64;--blue:#1769ff;--blue2:#2455ff;
+  --green:#12a84a;--orange:#f08a19;--purple:#6940d9;--ink:#14244a;
+  --muted:#71809a;--soft:#f6f8fc;--line:#e2e8f2
+}
+body{background:#f4f7fb;color:var(--ink);font-family:Inter,Segoe UI,Arial,sans-serif}
+.modern-sidebar{
+ position:fixed;left:0;top:0;bottom:0;width:248px;background:linear-gradient(180deg,#04183e,#05285e 58%,#041a43);
+ color:#fff;padding:24px 14px 16px;z-index:50;display:flex;flex-direction:column;
+ box-shadow:8px 0 30px rgba(4,24,62,.14)
+}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px 12px}
+.brand-mark{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#fff,#dbeafe);color:#0b2b69;display:grid;place-items:center;font-weight:900;font-size:16px;box-shadow:0 8px 18px #0003}
+.brand-name{font-weight:800;font-size:21px;line-height:.95;letter-spacing:-.5px}
+.brand-name span{font-size:23px}.brand-name b{color:#ffc12a;font-size:18px}
+.side-address{font-size:12px;line-height:1.65;color:#e6efff;padding:8px 8px}
+.side-phone{font-size:16px;font-weight:700;padding:7px 8px 14px}
+.gst-box{border:1px solid #1766ba;border-radius:12px;padding:10px;text-align:center;margin:0 0 15px;background:#082653}
+.gst-box small,.gst-box strong{display:block}.gst-box small{color:#a9c7f7}.gst-box strong{font-size:14px;margin-top:3px}
+.side-nav{display:flex;flex-direction:column;gap:5px}
+.side-nav button{background:transparent!important;box-shadow:none!important;color:#eaf1ff;border:0!important;text-align:left;padding:13px 14px;min-height:48px;border-radius:11px;font-size:15px}
+.side-nav button:hover{background:#123a7a!important}
+.side-nav .nav-active{background:linear-gradient(90deg,#1971ff,#3758ff)!important;box-shadow:0 8px 20px #0c5bff44!important}
+.side-nav span{display:inline-block;width:28px;font-size:21px;vertical-align:middle}.side-nav i{float:right;background:#ff4b4b;border-radius:999px;min-width:24px;height:24px;text-align:center;line-height:24px;font-style:normal}
+.side-bottom{margin-top:auto;border:1px solid #1b5b9c;border-radius:14px;padding:14px;text-align:center;background:linear-gradient(180deg,#062a5c,#06204b)}
+.cart-illustration{font-size:32px;line-height:1.1;margin-bottom:8px}
+.side-bottom>b{display:block;font-size:18px;font-style:italic;line-height:1.35}.side-bottom small{display:block;margin-top:12px;color:#dbeafe;line-height:1.5}.side-bottom strong{color:#ffd43b}
+.mobile-top{display:none}
+.app{max-width:none;margin-left:248px;padding:0 24px 50px;min-height:100vh}
+.app>.card:first-child{
+ background:#fff;color:var(--ink);border:0;border-radius:0;box-shadow:0 2px 12px #0b24400b;
+ margin:0 -24px 18px;padding:18px 28px;height:82px;display:flex;align-items:center;justify-content:flex-end;position:relative
+}
+.app>.card:first-child:before{content:"☰  New Bill";position:absolute;left:28px;font-size:24px;font-weight:700}
+.app>.card:first-child:after{content:"☀";position:absolute;right:160px;top:24px;color:#1769ff;background:none;width:auto;height:auto;font-size:28px}
+.app>.card:first-child h1,.app>.card:first-child .sub,.app>.card:first-child>div{display:none}
+.app>.card:first-child:after{border-radius:0}
+.app>.card:first-child button{display:block;width:125px;margin:0}
+.app>.card:nth-of-type(2){border:0;box-shadow:none;background:transparent;padding:0;margin:0 0 12px}
+#dashStats{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:16px!important}
+#dashStats>div{min-height:122px;border-radius:16px!important;padding:17px 20px!important;display:flex;flex-direction:column;justify-content:center;box-shadow:0 8px 22px #102a4d0b}
+#dashStats>div:nth-child(1){background:#eef5ff!important;border:1px solid #c9dcff}
+#dashStats>div:nth-child(2){background:#effbf3!important;border:1px solid #d1efd9}
+#dashStats>div:nth-child(3){background:#fff5e9!important;border:1px solid #f6dec2}
+#dashStats>div:nth-child(4){background:#f3efff!important;border:1px solid #ded4ff}
+#dashStats b{font-size:24px;margin-top:6px;color:#11234a}
+.app>.card:nth-of-type(3){border-radius:16px;box-shadow:0 8px 24px #102a4d0b}
+.app h2,.app h3{color:#142c63}
+.grid{gap:14px}
+input,select{border-color:#d8e0eb;border-radius:9px;min-height:46px}
+button{border-radius:9px}
+.bill{border:1px solid #e1e8f2!important;border-radius:16px!important;box-shadow:0 8px 25px #102a4d0a!important}
+.billhead{text-align:left;border-bottom:1px solid #e4e9f1;padding:2px 2px 14px}.billhead h2{color:#10275c;font-size:20px}.billhead div{color:#5b6c87}
+.bill table thead th{background:#062253;color:white;border-bottom:0;padding:10px}
+.bill table tbody td{background:#fff}
+.total{color:#0d55d7}
+.actions{background:transparent;border:0;box-shadow:none;padding:0}
+.actions button{min-height:48px}
+.actions button:first-child{background:linear-gradient(135deg,#10b84d,#06a843)}
+.actions button:nth-child(2){background:linear-gradient(135deg,#1671ff,#1454df)}
+.actions button:nth-child(3){background:linear-gradient(135deg,#ef4444,#e11d48)}
+.actions button:nth-child(4){background:linear-gradient(135deg,#14b95a,#079447)}
+.actions button:nth-child(n+5){background:#edf3ff;color:#1748b0;box-shadow:none}
+#duePanel,#ledgerPanel,#saved{border-radius:16px}
+@media(max-width:900px){
+ .modern-sidebar{display:none}.mobile-top{display:flex;position:sticky;top:0;z-index:40;height:62px;background:#fff;align-items:center;justify-content:space-between;padding:9px 12px;box-shadow:0 2px 12px #0b244012}
+ .mobile-brand{display:flex;align-items:center;gap:8px;color:#0b275b}.mobile-brand span{background:#0b2b69;color:white;border-radius:9px;padding:8px;font-weight:900;font-size:12px}.mobile-brand b{font-size:13px}
+ .mobile-top button{width:auto;padding:9px 13px;min-height:40px}
+ .app{margin-left:0;padding:0 10px 70px}.app>.card:first-child{display:none}
+ #dashStats{grid-template-columns:repeat(2,1fr)!important;gap:9px!important}
+ #dashStats>div{min-height:102px;padding:12px!important}.app>.card:nth-of-type(2){margin-top:10px}
+}
+@media(max-width:600px){
+ #dashStats{grid-template-columns:1fr 1fr!important}.actions{grid-template-columns:1fr 1fr!important}.actions button:first-child{grid-column:span 2}
+ .grid{grid-template-columns:1fr!important}
+}
+@media(print){.modern-sidebar,.mobile-top{display:none!important}.app{margin-left:0;padding:0}.app>.card:first-child{display:none}}
+</style>
+</head>
+<body>
+<aside class="modern-sidebar no-print">
+  <div class="brand">
+    <div class="brand-mark">SKB</div>
+    <div class="brand-name">SRI<br><span>KRISHNA</span><br><b>BUILDERS</b></div>
+  </div>
+  <div class="side-address">Vill – Erashal, P.O. – Nandapur<br>P.S. – Chandipur, PIN – 721625</div>
+  <div class="side-phone">☎ &nbsp;8906762010</div>
+  <div class="gst-box"><small>GST</small><strong>Not Registered</strong></div>
+  <nav class="side-nav">
+    <button class="nav-active" onclick="window.scrollTo({top:0,behavior:'smooth'})"><span>＋</span> New Bill</button>
+    <button onclick="showSaved()"><span>▤</span> Bills</button>
+    <button onclick="document.getElementById('item').focus();document.getElementById('item').scrollIntoView({behavior:'smooth'})"><span>◇</span> Products</button>
+    <button onclick="showLedger()"><span>♙</span> Customers</button>
+    <button onclick="showTotalDue()"><span>₹</span> Total Due <i id="dueBadge">0</i></button>
+    <button onclick="showLedger()"><span>▥</span> Reports</button>
+  </nav>
+  <div class="side-bottom">
+    <div class="cart-illustration">🧱<br>🔩 🧰</div>
+    <b>Build Strong<br>Build Better</b>
+    <small>Thank you for choosing<br><strong>SRI KRISHNA BUILDERS</strong></small>
+  </div>
+</aside>
+
+
+<div class="mobile-top no-print">
+  <div class="mobile-brand"><span>SKB</span><b>SRI KRISHNA BUILDERS</b></div>
+  <button onclick="newBill()">＋ New Bill</button>
+</div>
+<div class="app">
+<div class="card no-print">
+  <h1>SRI KRISHNA BUILDERS</h1>
+  <div class="sub">SRI KRISHNA BUILDERS</div>
+  <div>Vill – Erashal, P.O. – Nandapur, P.S. – Chandipur, PIN – 721625</div>
+  <div>Phone: 8906762010 • GST: Not Registered</div>
+</div>
+
+<div class="card no-print" style="padding:12px">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="dashStats">
+    <div style="padding:12px;border-radius:14px;background:#eff6ff"><div style="font-size:12px;color:#64748b">Today Sales</div><b id="dashSales">₹0.00</b></div>
+    <div style="padding:12px;border-radius:14px;background:#f0fdf4"><div style="font-size:12px;color:#64748b">Today's Paid</div><b id="dashPaid">₹0.00</b></div>
+    <div style="padding:12px;border-radius:14px;background:#fff7ed"><div style="font-size:12px;color:#64748b">Total Due</div><b id="dashDue">₹0.00</b></div>
+    <div style="padding:12px;border-radius:14px;background:#f3efff"><div style="font-size:12px;color:#64748b">Customers</div><b id="dashCustomers">0</b></div>
+  </div>
+</div>
+
+<div class="card no-print">
+<h2>New Bill</h2>
+<div class="grid">
+<div><label>Bill No.</label><input id="billNo" readonly></div>
+<div><label>Date / তারিখ</label><input id="date" type="date"></div>
+<div><label>Customer</label><input id="customer" placeholder="Customer name"></div>
+<div><label>Mobile</label><input id="mobile" placeholder="Phone number"></div>
+</div>
+</div>
+
+<div class="card no-print">
+<h3>Add Item</h3>
+<div class="grid">
+<div><label>Item</label><input id="item" placeholder="e.g. Cement 50kg"></div>
+<div><label>Unit</label><select id="unit"><option>Bag</option><option>Piece</option><option>Kg</option><option>Ton</option><option>CFT</option><option>Feet</option><option>Other</option></select></div>
+<div><label>Quantity</label><input id="qty" type="number" step="0.01" value="1"></div>
+<div><label>Rate</label><input id="rate" type="number" step="0.01" value="0"></div>
+<div><label>Transaction / Added Date</label><input id="itemDate" type="date"></div>
+</div><br><button onclick="addItem()">Add Item</button>
+</div>
+
+<div class="card bill">
+<div class="billhead">
+<h2>SRI KRISHNA BUILDERS</h2><div>SRI KRISHNA BUILDERS</div>
+<p>Vill – Erashal, P.O. – Nandapur, P.S. – Chandipur, PIN – 721625</p><p>Phone: 8906762010</p>
+</div>
+<div style="display:flex;justify-content:space-between;margin:12px 0">
+<div><b>Bill No:</b> <span id="showNo"></span><br><b>Customer:</b> <span id="showCustomer">—</span><br><b>Mobile:</b> <span id="showMobile">—</span></div>
+<div><b>Date:</b> <span id="showDate"></span></div>
+</div>
+<table><thead><tr><th>#</th><th>Item</th><th>Unit</th><th class="num">Qty</th><th class="num">Rate</th><th class="num">Amount</th><th class="no-print"></th></tr></thead>
+<tbody id="items"></tbody></table>
+
+<div id="schedulePanel" class="no-print" style="margin-top:16px;border-top:1px solid #e5e7eb;padding-top:14px;display:none">
+  <h3 style="margin:0 0 8px">Delivery / Product Dates</h3>
+  <div id="scheduleTitle" style="font-weight:bold;margin-bottom:8px"></div>
+  <div class="grid">
+    <div><label>Delivery Date</label><input id="scheduleDate" type="date"></div>
+    <div><label>Quantity</label><input id="scheduleQty" type="number" step="0.01" min="0"></div>
+  </div>
+  <button style="margin-top:8px" onclick="addSchedule()">Add Date / Quantity</button>
+  <div id="scheduleList" style="margin-top:10px"></div>
+</div>
+<div style="margin-top:12px;margin-left:auto;max-width:300px">
+<div style="display:flex;justify-content:space-between"><span>Subtotal</span><span id="subtotal">₹0.00</span></div>
+<div style="display:flex;justify-content:space-between;margin-top:6px"><span>Discount</span><input id="discount" type="number" value="0" step="0.01" style="width:120px;padding:6px" oninput="render()"></div>
+<hr><div class="total" style="display:flex;justify-content:space-between"><span>Grand Total</span><span id="grand">₹0.00</span></div>
+<div style="display:flex;justify-content:space-between;margin-top:7px"><span>Paid</span><input id="paid" type="number" value="0" step="0.01" style="width:120px;padding:6px" readonly></div>
+<div style="display:flex;justify-content:space-between;margin-top:7px;font-weight:bold"><span>Due</span><span id="due">₹0.00</span></div>
+</div>
+
+<div class="no-print" style="margin-top:18px;border-top:1px solid #e5e7eb;padding-top:14px">
+  <h3 style="margin:0 0 8px">Due Payment History</h3>
+  <div class="grid">
+    <div><label>Payment Date</label><input id="paymentDate" type="date"></div>
+    <div><label>Deposit Amount</label><input id="paymentAmount" type="number" step="0.01" min="0" placeholder="0.00"></div>
+  </div>
+  <button style="margin-top:8px" onclick="addPayment()">Add Due Payment</button>
+  <div id="paymentsList" style="margin-top:10px"></div>
+</div>
+
+
+<div id="printSchedules" style="margin-top:12px"></div>
+<div id="printPayments" style="margin-top:12px"></div>
+<p style="margin-top:28px;text-align:center">Thank you</p>
+</div>
+
+<div class="card no-print actions">
+<button onclick="saveBill()">Save Bill</button>
+<button class="secondary" onclick="window.print()">Print</button>
+<button class="secondary" onclick="newBill()">New Bill</button>
+<button class="secondary" onclick="showTotalDue()">Total Due</button><button class="secondary" onclick="showLedger()">Customer Ledger</button><button class="secondary" onclick="shareWhatsApp()">Share WhatsApp</button><button class="secondary" onclick="showSaved()">Old Bills / Add Product</button>
+</div>
+<div id="duePanel" class="card no-print" style="display:none"></div><div id="ledgerPanel" class="card no-print" style="display:none"></div>
+
+<div id="saved" class="card no-print" style="display:none"></div>
+</div>
+<script>
+let items=[]; let payments=[];
+const $=id=>document.getElementById(id);
+function nextNo(){let n=Number(localStorage.getItem("skb_next")||1);$("billNo").value=String(n).padStart(4,"0");}
+function today(){let d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
+function refreshDashboard(){
+  const all=JSON.parse(localStorage.getItem("skb_bills")||"[]");
+  const td=today();
+  let sales=0,paidToday=0,due=0; const customers={};
+  all.forEach(b=>{
+    if(b.date===td) { sales+=(b.items||[]).reduce((a,x)=>a+(Number(x.q)||0)*(Number(x.r)||0),0)-(Number(b.discount)||0); paidToday+=(b.payments||[]).filter(p=>p.date===td).reduce((a,p)=>a+(Number(p.amount)||0),0); }
+    const total=(b.items||[]).reduce((a,x)=>a+(Number(x.q)||0)*(Number(x.r)||0),0)-(Number(b.discount)||0);
+    const paid=(b.payments||[]).length?(b.payments||[]).reduce((a,p)=>a+(Number(p.amount)||0),0):(Number(b.paid)||0);
+    due+=Math.max(0,total-paid);
+    const k=(b.customer||"Walk-in Customer").trim().toLowerCase()+"|"+(b.mobile||""); customers[k]=1;
+  });
+  if($("dashSales"))$("dashSales").textContent=money(sales); if($("dashPaid"))$("dashPaid").textContent=money(paidToday);
+  if($("dashDue"))$("dashDue").textContent=money(due);
+  if($("dashCustomers"))$("dashCustomers").textContent=Object.keys(customers).length; if($("dueBadge"))$("dueBadge").textContent=Object.values(customers).length;
+}
+function newBill(){items=[];payments=[];$("customer").value="";$("mobile").value="";$("discount").value=0;$("paid").value=0;$("date").value=today();$("paymentDate").value=today();$("paymentAmount").value="";$("itemDate").value=today();nextNo();render()}
+function addItem(){let name=$("item").value.trim(),q=Number($("qty").value),r=Number($("rate").value);if(!name||q<=0){alert("Enter item and quantity");return}items.push({name,unit:$("unit").value,q,r,itemDate:$("itemDate").value||$("date").value,schedule:[]});$("item").value="";$("qty").value=1;$("rate").value=0;$("itemDate").value=today();render()}
+function removeItem(i){items.splice(i,1);render()}
+function money(x){return "₹"+Number(x||0).toFixed(2)}
+function render(){
+$("showNo").textContent=$("billNo").value;
+$("showCustomer").textContent=$("customer").value||"—";
+$("showMobile").textContent=$("mobile").value||"—";
+$("showDate").textContent=$("date").value;
+let sub=0;
+$("items").innerHTML=items.map((x,i)=>{
+  let a=x.q*x.r; sub+=a;
+  return `<tr><td>${i+1}</td><td>${x.name}${x.schedule&&x.schedule.length?`<div style="font-size:11px;color:#2563eb;margin-top:3px">${x.schedule.length} scheduled date(s)</div>`:""}</td><td>${x.itemDate||$("date").value}</td><td>${x.unit}</td><td class="num">${x.q}</td><td class="num">${money(x.r)}</td><td class="num">${money(a)}</td><td class="no-print"><button class="secondary" style="width:auto;padding:6px 8px" onclick="openSchedule(${i})">Dates</button> <button class="danger" style="width:auto;padding:6px 8px" onclick="removeItem(${i})">×</button></td></tr>`
+}).join("");
+let disc=Number($("discount").value)||0,grand=Math.max(0,sub-disc);
+let paid=payments.reduce((a,p)=>a+(Number(p.amount)||0),0),due=Math.max(0,grand-paid);
+$("paid").value=paid.toFixed(2);
+$("subtotal").textContent=money(sub);
+$("grand").textContent=money(grand);
+$("due").textContent=money(due);
+
+$("paymentsList").innerHTML=payments.length
+ ? `<table><thead><tr><th>Date</th><th>Amount</th><th class="no-print">Action</th></tr></thead><tbody>`+
+   payments.map((p,i)=>`<tr><td>${p.date}</td><td>${money(p.amount)}</td><td class="no-print"><button class="secondary" style="width:auto;padding:6px 10px" onclick="editPayment(${i})">Edit</button> <button class="danger" style="width:auto;padding:6px 10px" onclick="deletePayment(${i})">Delete</button></td></tr>`).join("")+
+   `</tbody></table>`
+ : `<div style="color:#6b7280">No due payments recorded.</div>`;
+
+$("printSchedules").innerHTML=items.some(x=>x.schedule&&x.schedule.length)
+ ? `<h4 style="margin-bottom:5px">Delivery Schedule</h4><table><thead><tr><th>Item</th><th>Date</th><th>Qty</th></tr></thead><tbody>`+
+   items.flatMap(x=>(x.schedule||[]).map(v=>`<tr><td>${x.name}</td><td>${v.date}</td><td>${v.qty} ${x.unit}</td></tr>`)).join("")+
+   `</tbody></table>` : "";
+$("printPayments").innerHTML=payments.length
+ ? `<h4 style="margin-bottom:5px">Due Payment History</h4><table><thead><tr><th>Date</th><th>Amount</th></tr></thead><tbody>`+
+   payments.map(p=>`<tr><td>${p.date}</td><td>${money(p.amount)}</td></tr>`).join("")+
+   `</tbody></table>`
+ : "";
+}
+let scheduleItemIndex=null;
+function openSchedule(i){
+  scheduleItemIndex=i;
+  const x=items[i];
+  $("schedulePanel").style.display="block";
+  $("scheduleTitle").textContent=x.name+" — Total Qty: "+x.q+" "+x.unit;
+  $("scheduleDate").value=today();
+  $("scheduleQty").value="";
+  renderSchedule();
+  $("schedulePanel").scrollIntoView({behavior:"smooth"});
+}
+function closeSchedule(){
+  scheduleItemIndex=null;
+  $("schedulePanel").style.display="none";
+}
+function addSchedule(){
+  if(scheduleItemIndex===null)return;
+  const date=$("scheduleDate").value||today(), qty=Number($("scheduleQty").value)||0;
+  if(qty<=0){alert("Enter a valid quantity.");return}
+  const x=items[scheduleItemIndex];
+  x.schedule=x.schedule||[];
+  const scheduled=x.schedule.reduce((a,v)=>a+Number(v.qty||0),0);
+  if(scheduled+qty>x.q){alert("Scheduled quantity cannot be greater than the item quantity.");return}
+  x.schedule.push({date,qty});
+  x.schedule.sort((a,b)=>a.date.localeCompare(b.date));
+  $("scheduleQty").value="";
+  renderSchedule(); render(); refreshDashboard();
+}
+function editSchedule(i){
+  if(scheduleItemIndex===null)return;
+  const x=items[scheduleItemIndex], old=x.schedule[i];
+  const date=prompt("Delivery date (YYYY-MM-DD):",old.date); if(date===null)return;
+  const qty=Number(prompt("Quantity:",old.qty)); if(!date||qty<=0)return;
+  const other=x.schedule.reduce((a,v,j)=>j===i?a:a+Number(v.qty||0),0);
+  if(other+qty>x.q){alert("Scheduled quantity cannot be greater than the item quantity.");return}
+  x.schedule[i]={date,qty};x.schedule.sort((a,b)=>a.date.localeCompare(b.date));renderSchedule();render();
+}
+function deleteSchedule(i){
+  if(scheduleItemIndex===null)return;
+  if(confirm("Delete this delivery entry?")){items[scheduleItemIndex].schedule.splice(i,1);renderSchedule();render();}
+}
+function renderSchedule(){
+  if(scheduleItemIndex===null)return;
+  const x=items[scheduleItemIndex], list=x.schedule||[];
+  const scheduled=list.reduce((a,v)=>a+Number(v.qty||0),0), remaining=Math.max(0,x.q-scheduled);
+  $("scheduleList").innerHTML=(list.length?`<table><thead><tr><th>Date</th><th>Qty</th><th class="no-print">Action</th></tr></thead><tbody>`+
+    list.map((v,i)=>`<tr><td>${v.date}</td><td>${v.qty} ${x.unit}</td><td class="no-print"><button class="secondary" style="width:auto;padding:6px 8px" onclick="editSchedule(${i})">Edit</button> <button class="danger" style="width:auto;padding:6px 8px" onclick="deleteSchedule(${i})">Delete</button></td></tr>`).join("")+
+    `</tbody></table>`:"<div style='color:#6b7280'>No delivery dates added.</div>")+
+    `<div style="margin-top:8px;font-weight:bold">Scheduled: ${scheduled} ${x.unit} • Remaining: ${remaining} ${x.unit}</div>`;
+}
+function addPayment(){
+  let amount=Number($("paymentAmount").value)||0, date=$("paymentDate").value||today();
+  if(amount<=0){alert("Enter a valid deposit amount.");return}
+  let sub=items.reduce((a,x)=>a+x.q*x.r,0),grand=Math.max(0,sub-(Number($("discount").value)||0));
+  let paid=payments.reduce((a,p)=>a+(Number(p.amount)||0),0),due=Math.max(0,grand-paid);
+  if(amount>due){alert("Payment cannot be greater than the current due amount.");return}
+  payments.push({date,amount});
+  payments.sort((a,b)=>a.date.localeCompare(b.date));
+  $("paymentAmount").value="";
+  $("paymentDate").value=today();
+  render();
+}
+function editPayment(i){
+  let p=payments[i], date=prompt("Payment date (YYYY-MM-DD):",p.date);
+  if(date===null)return;
+  let amount=prompt("Payment amount:",p.amount);
+  if(amount===null)return;
+  amount=Number(amount);
+  if(!date||amount<=0){alert("Invalid payment.");return}
+  let sub=items.reduce((a,x)=>a+x.q*x.r,0),grand=Math.max(0,sub-(Number($("discount").value)||0));
+  let otherPaid=payments.reduce((a,x,j)=>j===i?a:a+(Number(x.amount)||0),0);
+  if(amount>Math.max(0,grand-otherPaid)){alert("Payment cannot be greater than the current due amount.");return}
+  payments[i]={date,amount};
+  payments.sort((a,b)=>a.date.localeCompare(b.date));
+  render();
+}
+function deletePayment(i){
+  if(confirm("Delete this payment record?")){payments.splice(i,1);render();refreshDashboard();}
+}
+function billData(){
+  return {no:$("billNo").value,date:$("date").value,customer:$("customer").value,mobile:$("mobile").value,
+    items,discount:Number($("discount").value)||0,paid:payments.reduce((a,p)=>a+(Number(p.amount)||0),0),payments};
+}
+function readBills(){
+  try{
+    const raw=localStorage.getItem("skb_bills");
+    const data=raw?JSON.parse(raw):[];
+    return Array.isArray(data)?data:[];
+  }catch(e){
+    console.error("Could not read saved bills",e);
+    return [];
+  }
+}
+function saveBill(){
+  if(!items.length){alert("Add at least one item.");return}
+  let d=billData(),all=readBills();
+  let idx=all.findIndex(b=>b.no===d.no);
+  if(idx>=0) all[idx]=d; else {all.unshift(d);localStorage.setItem("skb_next",Number(d.no)+1);}
+  localStorage.setItem("skb_bills",JSON.stringify(all));
+  refreshDashboard();
+  alert("Bill saved / updated.");
+}
+function showSaved(){
+  const all=readBills(),box=$("saved");
+  box.style.display="block";
+  box.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
+    <div><h3 style="margin:0">Old Bills / Add Product</h3><div style="color:#64748b;font-size:13px;margin-top:4px">Open an old bill and add a new product to the same customer bill. New products use today's transaction date.</div></div>
+    <button class="secondary" style="width:auto;padding:7px 12px" onclick="$('saved').style.display='none'">Close</button>
+  </div>`+
+  (all.length?all.map((b,i)=>`<div style="padding:12px;border:1px solid #e2e8f0;border-radius:12px;margin:8px 0;background:#f8fbff">
+    <div><b>#${b.no}</b> — ${b.customer||"Walk-in Customer"}</div>
+    <div style="font-size:12px;color:#64748b;margin-top:3px">Original bill: ${b.date||"—"} • ${b.mobile||"No mobile"} • ${(b.items||[]).length} product(s)</div>
+    <button style="width:auto;padding:8px 13px;margin-top:8px" onclick="loadBill(${i})">Open / Add Product</button>
+  </div>`).join(""):"<div style='padding:15px;background:#f8fafc;border-radius:12px;color:#64748b'>No saved bills yet.</div>");
+  box.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function loadBill(i){
+  const all=readBills();
+  const b=all[i];
+  if(!b){alert("This old bill could not be found. Please open Bills again.");return}
+  $("billNo").value=b.no;
+  $("date").value=b.date||today();
+  $("customer").value=b.customer||"";
+  $("mobile").value=b.mobile||"";
+  items=(b.items||[]).map(x=>({...x,itemDate:x.itemDate||b.date||today(),schedule:x.schedule||[]}));
+  payments=Array.isArray(b.payments)?b.payments.map(p=>({...p})):[];
+  if(!payments.length && Number(b.paid)>0) payments=[{date:b.date||today(),amount:Number(b.paid)}];
+  $("discount").value=b.discount||0;
+  $("paymentDate").value=today();
+  $("paymentAmount").value="";
+  $("itemDate").value=today();
+  $("item").value="";
+  $("qty").value=1;
+  $("rate").value=0;
+  render();refreshDashboard();
+  $("saved").style.display="none";
+  $("item").scrollIntoView({behavior:"smooth",block:"center"});
+  $("item").focus();
+}
+newBill();refreshDashboard();["customer","mobile","date"].forEach(x=>$(x).addEventListener("input",render));
+</script>
+
+<div class="mobile-bottom no-print">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})">⌂<small>Home</small></button>
+  <button onclick="showSaved()">▤<small>Bills</small></button>
+  <button onclick="showLedger()">♙<small>Customers</small></button>
+  <button onclick="showTotalDue()">₹<small>Due</small></button>
+</div>
+
+<style>
+.mobile-bottom{display:none}
+@media(max-width:900px){
+.mobile-bottom{display:flex;position:fixed;left:10px;right:10px;bottom:9px;height:60px;background:#fff;border:1px solid #dce5f2;border-radius:18px;z-index:60;box-shadow:0 12px 30px #102a4d22;justify-content:space-around}
+.mobile-bottom button{background:transparent!important;color:#17325f;box-shadow:none!important;border:0!important;min-height:0;font-size:21px;padding:7px 12px}
+.mobile-bottom small{display:block;font-size:10px;margin-top:1px;color:#64748b}
+}
+</style>
+
+<script>
+(function(){
+  if("serviceWorker" in navigator){
+    window.addEventListener("load",function(){
+      navigator.serviceWorker.register("sw.js?v=20260814-2",{scope:"./"}).then(function(reg){
+        if(reg.waiting) reg.waiting.postMessage({type:"SKIP_WAITING"});
+      }).catch(function(err){console.warn("Service worker registration failed",err);});
+    });
+  }
+})();
+</script>
+</body></html>
