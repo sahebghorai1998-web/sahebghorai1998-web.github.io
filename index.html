@@ -1,12 +1,6 @@
 <!doctype html>
 <html lang="bn">
 <head>
-<meta name="theme-color" content="#061b45">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon-192.png">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SRI KRISHNA BUILDERS - Billing</title>
@@ -407,7 +401,7 @@ function saveBill(){
 }
 function showSaved(){
   let all=JSON.parse(localStorage.getItem("skb_bills")||"[]"),box=$("saved");box.style.display="block";
-  box.innerHTML="<h3>Saved Bills</h3><div style="color:#6b7280;margin-bottom:8px">Open any old bill to add new products to the same customer bill. The new product keeps its own transaction date.</div>"+(all.length?all.map((b,i)=>`<div style="padding:10px;border-bottom:1px solid #ddd"><b>#${b.no}</b> — ${b.date} — ${b.customer||"—"} <button style="width:auto;padding:6px 10px;float:right;margin-left:5px" onclick="loadBill(${i})">Open / Add Product</button></div>`).join(""):"No saved bills");
+  box.innerHTML=`<h3>Saved Bills</h3><div style="color:#6b7280;margin-bottom:8px">Open any old bill to add new products to the same customer bill. The new product keeps its own transaction date.</div>`+(all.length?all.map((b,i)=>`<div style="padding:10px;border-bottom:1px solid #ddd"><b>#${b.no}</b> — ${b.date} — ${b.customer||"—"} <button style="width:auto;padding:6px 10px;float:right;margin-left:5px" onclick="loadBill(${i})">Open / Add Product</button></div>`).join(""):"No saved bills");
 }
 function loadBill(i){
   let b=JSON.parse(localStorage.getItem("skb_bills")||"[]")[i];
@@ -435,9 +429,4 @@ newBill();refreshDashboard();["customer","mobile","date"].forEach(x=>$(x).addEve
 .mobile-bottom small{display:block;font-size:10px;margin-top:1px;color:#64748b}
 }
 </style>
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
-}
-</script>
 </body></html>
