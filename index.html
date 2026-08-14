@@ -393,25 +393,61 @@ function billData(){
   return {no:$("billNo").value,date:$("date").value,customer:$("customer").value,mobile:$("mobile").value,
     items,discount:Number($("discount").value)||0,paid:payments.reduce((a,p)=>a+(Number(p.amount)||0),0),payments};
 }
+function readBills(){
+  try{
+    const raw=localStorage.getItem("skb_bills");
+    const data=raw?JSON.parse(raw):[];
+    return Array.isArray(data)?data:[];
+  }catch(e){
+    console.error("Could not read saved bills",e);
+    return [];
+  }
+}
 function saveBill(){
   if(!items.length){alert("Add at least one item.");return}
-  let d=billData(),all=JSON.parse(localStorage.getItem("skb_bills")||"[]");
+  let d=billData(),all=readBills();
   let idx=all.findIndex(b=>b.no===d.no);
   if(idx>=0) all[idx]=d; else {all.unshift(d);localStorage.setItem("skb_next",Number(d.no)+1);}
   localStorage.setItem("skb_bills",JSON.stringify(all));
-  refreshDashboard(); alert("Bill saved / updated.");
+  refreshDashboard();
+  alert("Bill saved / updated.");
 }
 function showSaved(){
-  let all=JSON.parse(localStorage.getItem("skb_bills")||"[]"),box=$("saved");box.style.display="block";
-  box.innerHTML=`<h3>Saved Bills</h3><div style="color:#6b7280;margin-bottom:8px">Open any old bill to add new products to the same customer bill. The new product keeps its own transaction date.</div>`+(all.length?all.map((b,i)=>`<div style="padding:10px;border-bottom:1px solid #ddd"><b>#${b.no}</b> — ${b.date} — ${b.customer||"—"} <button style="width:auto;padding:6px 10px;float:right;margin-left:5px" onclick="loadBill(${i})">Open / Add Product</button></div>`).join(""):"No saved bills");
+  const all=readBills(),box=$("saved");
+  box.style.display="block";
+  box.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
+    <div><h3 style="margin:0">Old Bills / Add Product</h3><div style="color:#64748b;font-size:13px;margin-top:4px">Open an old bill and add a new product to the same customer bill. New products use today's transaction date.</div></div>
+    <button class="secondary" style="width:auto;padding:7px 12px" onclick="$('saved').style.display='none'">Close</button>
+  </div>`+
+  (all.length?all.map((b,i)=>`<div style="padding:12px;border:1px solid #e2e8f0;border-radius:12px;margin:8px 0;background:#f8fbff">
+    <div><b>#${b.no}</b> — ${b.customer||"Walk-in Customer"}</div>
+    <div style="font-size:12px;color:#64748b;margin-top:3px">Original bill: ${b.date||"—"} • ${b.mobile||"No mobile"} • ${(b.items||[]).length} product(s)</div>
+    <button style="width:auto;padding:8px 13px;margin-top:8px" onclick="loadBill(${i})">Open / Add Product</button>
+  </div>`).join(""):"<div style='padding:15px;background:#f8fafc;border-radius:12px;color:#64748b'>No saved bills yet.</div>");
+  box.scrollIntoView({behavior:"smooth",block:"start"});
 }
 function loadBill(i){
-  let b=JSON.parse(localStorage.getItem("skb_bills")||"[]")[i];
-  $("billNo").value=b.no;$("date").value=b.date;$("customer").value=b.customer||"";$("mobile").value=b.mobile||"";
-  items=(b.items||[]).map(x=>({...x,itemDate:x.itemDate||b.date,schedule:x.schedule||[]}));payments=b.payments||[];
-  if(!payments.length && Number(b.paid)>0) payments=[{date:b.date,amount:Number(b.paid)}];
-  $("discount").value=b.discount||0;$("paymentDate").value=today();$("paymentAmount").value="";
-  render();refreshDashboard();scrollTo(0,0);
+  const all=readBills();
+  const b=all[i];
+  if(!b){alert("This old bill could not be found. Please open Bills again.");return}
+  $("billNo").value=b.no;
+  $("date").value=b.date||today();
+  $("customer").value=b.customer||"";
+  $("mobile").value=b.mobile||"";
+  items=(b.items||[]).map(x=>({...x,itemDate:x.itemDate||b.date||today(),schedule:x.schedule||[]}));
+  payments=Array.isArray(b.payments)?b.payments.map(p=>({...p})):[];
+  if(!payments.length && Number(b.paid)>0) payments=[{date:b.date||today(),amount:Number(b.paid)}];
+  $("discount").value=b.discount||0;
+  $("paymentDate").value=today();
+  $("paymentAmount").value="";
+  $("itemDate").value=today();
+  $("item").value="";
+  $("qty").value=1;
+  $("rate").value=0;
+  render();refreshDashboard();
+  $("saved").style.display="none";
+  $("item").scrollIntoView({behavior:"smooth",block:"center"});
+  $("item").focus();
 }
 newBill();refreshDashboard();["customer","mobile","date"].forEach(x=>$(x).addEventListener("input",render));
 </script>
@@ -431,4 +467,16 @@ newBill();refreshDashboard();["customer","mobile","date"].forEach(x=>$(x).addEve
 .mobile-bottom small{display:block;font-size:10px;margin-top:1px;color:#64748b}
 }
 </style>
+
+<script>
+(function(){
+  if("serviceWorker" in navigator){
+    window.addEventListener("load",function(){
+      navigator.serviceWorker.register("sw.js?v=20260814-2",{scope:"./"}).then(function(reg){
+        if(reg.waiting) reg.waiting.postMessage({type:"SKIP_WAITING"});
+      }).catch(function(err){console.warn("Service worker registration failed",err);});
+    });
+  }
+})();
+</script>
 </body></html>
