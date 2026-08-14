@@ -1,9 +1,7 @@
-const CACHE_NAME = 'skb-billing-v20260814-3';
-const APP_SHELL = ['./', './index.html', './manifest.webmanifest'];
+const CACHE_NAME = 'skb-billing-v20260814-4';
+const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './fix.js'];
 
 self.addEventListener('install', event => {
-  // Install the new worker immediately so an older worker cannot keep serving
-  // the previous billing UI.
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -33,18 +31,27 @@ self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET') return;
 
-  // HTML/navigation must always come from the network first. This prevents
-  // an older index.html from making a button execute an obsolete handler
-  // such as addItem() instead of showSaved().
   if (req.mode === 'navigate' || req.destination === 'document') {
     event.respondWith(
       fetch(req, { cache: 'no-store' })
-        .then(response => {
-          const copy = response.clone();
+        .then(async response => {
+          const text = await response.text();
+          const injected = text.replace(
+            /<\\/body>/i,
+            '<script src="./fix.js"></script></body>'
+          );
+          const headers = new Headers(response.headers);
+          headers.set('Content-Type', 'text/html; charset=utf-8');
+          const fixedResponse = new Response(injected, {
+            status: response.status,
+            statusText: response.statusText,
+            headers
+          });
+          const copy = fixedResponse.clone();
           caches.open(CACHE_NAME)
             .then(cache => cache.put(req, copy))
             .catch(() => {});
-          return response;
+          return fixedResponse;
         })
         .catch(() =>
           caches.match(req).then(cached => cached || caches.match('./index.html'))
@@ -53,8 +60,6 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // For assets, use the network when available and keep a fresh copy for
-  // offline use. Failed requests fall back to the current cache.
   event.respondWith(
     fetch(req, { cache: 'no-store' })
       .then(response => {
