@@ -1,4 +1,4 @@
-const CACHE_NAME = 'skb-billing-v20260814-4';
+const CACHE_NAME = 'skb-billing-v20260814-5';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './fix.js'];
 
 self.addEventListener('install', event => {
@@ -37,7 +37,7 @@ self.addEventListener('fetch', event => {
         .then(async response => {
           const text = await response.text();
           const injected = text.replace(
-            /<\\/body>/i,
+            '</body>',
             '<script src="./fix.js"></script></body>'
           );
           const headers = new Headers(response.headers);
