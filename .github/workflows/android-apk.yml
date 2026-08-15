@@ -33,6 +33,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Prepare Capacitor web directory
+        run: |
+          rm -rf www
+          mkdir -p www/icons
+          cp index.html manifest.webmanifest sw.js fix.js www/
+          cp icons/*.png www/icons/
+
       - name: Create Android project
         run: npx cap add android
 
