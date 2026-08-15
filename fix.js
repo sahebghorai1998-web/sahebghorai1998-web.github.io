@@ -79,16 +79,51 @@
     box.scrollIntoView({behavior:'smooth',block:'start'});
   };
 
+  // Professional WhatsApp bill message. Designed for WhatsApp readability on mobile.
   window.shareWhatsApp=function(){
     const a=currentArrays();
     if(!a.items || !a.items.length){alert('Add at least one item before sharing.');return;}
     const sub=a.items.reduce((s,x)=>s+(Number(x.q)||0)*(Number(x.r)||0),0);
-    const total=Math.max(0,sub-(Number($('discount')?.value)||0));
+    const discount=Number($('discount')?.value)||0;
+    const total=Math.max(0,sub-discount);
     const paid=(a.payments||[]).reduce((s,p)=>s+(Number(p.amount)||0),0);
     const due=Math.max(0,total-paid);
-    const lines=['*SRI KRISHNA BUILDERS*',`Bill No: ${$('billNo')?.value||''}`,`Customer: ${$('customer')?.value||'—'}`,`Date: ${$('date')?.value||today()}`,'',...a.items.map((x,i)=>`${i+1}. ${x.name} - ${x.q} ${x.unit} × ${money(x.r)} = ${money((Number(x.q)||0)*(Number(x.r)||0))}`),'',`Grand Total: ${money(total)}`,`Paid: ${money(paid)}`,`Due: ${money(due)}`];
-    const mobile=String($('mobile')?.value||'').replace(/\D/g,'');
-    const url='https://wa.me/'+(mobile?mobile:'')+'?text='+encodeURIComponent(lines.join('\n'));
+    const billNo=$('billNo')?.value||'—';
+    const customer=$('customer')?.value||'—';
+    const mobile=$('mobile')?.value||'';
+    const date=$('date')?.value||today();
+    const items=a.items.map((x,i)=>{
+      const qty=Number(x.q)||0, rate=Number(x.r)||0, amount=qty*rate;
+      return `${i+1}. ${x.name}\n   ${qty} ${x.unit} × ${money(rate)} = *${money(amount)}*`;
+    });
+    const status=due<=0?'✅ PAID IN FULL':'⏳ BALANCE DUE';
+    const lines=[
+      '━━━━━━━━━━━━━━━━━━━━',
+      '🏗️ *SRI KRISHNA BUILDERS*',
+      '━━━━━━━━━━━━━━━━━━━━',
+      '🧾 *BILL DETAILS*',
+      `Bill No: *${billNo}*`,
+      `Date: ${date}`,
+      `Customer: *${customer}*`,
+      mobile?`Mobile: ${mobile}`:null,
+      '',
+      '📦 *ITEMS*',
+      ...items,
+      '',
+      '━━━━━━━━━━━━━━━━━━━━',
+      `Subtotal: ${money(sub)}`,
+      discount>0?`Discount: -${money(discount)}`:null,
+      `*GRAND TOTAL: ${money(total)}*`,
+      `Paid: ${money(paid)}`,
+      `*Due: ${money(due)}*`,
+      status,
+      '━━━━━━━━━━━━━━━━━━━━',
+      'Thank you for choosing *SRI KRISHNA BUILDERS* 🙏',
+      'Vill – Erashal, P.O. – Nandapur, P.S. – Chandipur',
+      'PIN – 721625 | 📞 8906762010'
+    ].filter(Boolean);
+    const cleanMobile=String(mobile).replace(/\D/g,'');
+    const url='https://wa.me/'+(cleanMobile||'')+'?text='+encodeURIComponent(lines.join('\n'));
     window.open(url,'_blank');
   };
 
