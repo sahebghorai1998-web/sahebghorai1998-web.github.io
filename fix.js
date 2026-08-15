@@ -101,9 +101,37 @@
     };
   }
 
+  function updateAddAnotherButton(){
+    const a=currentArrays();
+    const btn=$('skbAddAnotherItem');
+    if(btn) btn.style.display=(a.items && a.items.length)?'block':'none';
+  }
+
+  function ensureAddAnotherButton(){
+    if($('skbAddAnotherItem')) return;
+    const itemInput=$('item');
+    if(!itemInput) return;
+    const addButton=itemInput.closest('.grid')?.parentElement?.querySelector('button[onclick*="addItem"]') || Array.from(document.querySelectorAll('button')).find(b=>/add item/i.test(b.textContent||''));
+    const host=(addButton&&addButton.parentElement) || itemInput.parentElement?.parentElement;
+    if(!host) return;
+    const wrap=document.createElement('div');
+    wrap.style.cssText='margin-top:10px;display:none';
+    wrap.innerHTML='<button type="button" id="skbAddAnotherItem" class="secondary" style="width:100%;font-weight:700">＋ Add Another Item</button>';
+    host.appendChild(wrap);
+    const btn=$('skbAddAnotherItem');
+    btn.onclick=function(){
+      const item=$('item'), qty=$('qty')||$('quantity'), rate=$('rate');
+      if(item) item.value='';
+      if(qty) qty.value='1';
+      if(rate) rate.value='0';
+      if(item){ item.scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(()=>item.focus(),250); }
+    };
+    updateAddAnotherButton();
+  }
+
   if(typeof window.addItem==='function'){
     const original=window.addItem;
-    window.addItem=function(){const before=currentArrays().items?.length||0;original.apply(this,arguments);if((currentArrays().items?.length||0)>before)persistCurrentBill();};
+    window.addItem=function(){const before=currentArrays().items?.length||0;original.apply(this,arguments);if((currentArrays().items?.length||0)>before)persistCurrentBill();updateAddAnotherButton();};
   }
   if(typeof window.addPayment==='function'){
     const original=window.addPayment;
@@ -111,7 +139,7 @@
   }
   if(typeof window.removeItem==='function'){
     const original=window.removeItem;
-    window.removeItem=function(){original.apply(this,arguments);persistCurrentBill();};
+    window.removeItem=function(){original.apply(this,arguments);persistCurrentBill();updateAddAnotherButton();};
   }
   if(typeof window.deletePayment==='function'){
     const original=window.deletePayment;
@@ -146,7 +174,12 @@
     const el=$(id); if(el) el.addEventListener('change',persistCurrentBill);
   });
 
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){try{persistCurrentBill();if(typeof window.refreshDashboard==='function')window.refreshDashboard();}catch(e){}}});
+  document.addEventListener('DOMContentLoaded',()=>{
+    ensureAddAnotherButton();
+    setTimeout(ensureAddAnotherButton,300);
+    setTimeout(updateAddAnotherButton,500);
+  });
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){try{persistCurrentBill();if(typeof window.refreshDashboard==='function')window.refreshDashboard();updateAddAnotherButton();}catch(e){}}});
 
   console.log('SKB billing functions/persistence fix loaded');
 })();
