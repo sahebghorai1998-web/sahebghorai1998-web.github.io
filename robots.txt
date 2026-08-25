@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sahebghorai1998-web.github.io/sri-krishna-builders/sitemap.xml
+Sitemap: https://sahebghorai1998-web.github.io/sitemap.xml
